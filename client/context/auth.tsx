@@ -1,19 +1,8 @@
 import Axios from "axios";
 import { createContext, useContext, useEffect, useReducer } from "react";
-import { UserModel } from "../@types";
+import { AuthAction, AuthState, ReactChildren } from "../@types";
 
-interface State {
-  authenticated: boolean;
-  user: UserModel | undefined;
-  loading: boolean;
-}
-
-interface Action {
-  type: string;
-  payload: any;
-}
-
-const StateContext = createContext<State>({
+const StateContext = createContext<AuthState>({
   authenticated: false,
   user: null,
   loading: true,
@@ -21,7 +10,7 @@ const StateContext = createContext<State>({
 
 const DispatchContext = createContext(null);
 
-const reducer = (state: State, { type, payload }: Action) => {
+const reducer = (state: AuthState, { type, payload }: AuthAction) => {
   switch (type) {
     case "LOGIN":
       return {
@@ -38,7 +27,7 @@ const reducer = (state: State, { type, payload }: Action) => {
   }
 };
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
+export const AuthProvider = ({ children }: ReactChildren) => {
   const [state, defaultDispatch] = useReducer(reducer, {
     user: null,
     authenticated: false,
