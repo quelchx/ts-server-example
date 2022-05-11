@@ -11,7 +11,7 @@ export const verifyToken = (
   const token = req.cookies.token;
 
   if (!token) {
-    return next(createError(res,  "No token is present, can't verify"));
+    return next(createError(res, "No token is present, can't verify"));
   }
 
   jwt.verify(token, process.env.JWT_SECRET!, (err: any, user: any) => {
