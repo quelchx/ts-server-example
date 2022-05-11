@@ -1,3 +1,4 @@
+/** @tsconfig strictNullChecks: false -- warnings were occuring due to user being temporary null */
 import Axios from "axios";
 import { createContext, useContext, useEffect, useReducer } from "react";
 import { AuthAction, AuthState, ReactChildren } from "../@types";
