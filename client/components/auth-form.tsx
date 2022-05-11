@@ -6,10 +6,29 @@ import { useRouter } from "next/router";
 import Field from "../components/input-field";
 import { useAuthDispatch, useAuthState } from "../context/auth";
 import type { ChangeEvent, FieldReferenceType } from "../@types";
+import { passwordCheck } from "../utils/password-check";
 
 interface AuthFormProps {
   type: "login" | "register";
 }
+
+const credentials = [
+  "Has no whitespaces",
+  "Contains at least one uppercase letter",
+  "Contain at least one lowercase letter",
+  "Contains at least one special symbol ex) !@#$%&",
+  "Contains at least one digit",
+  "Must be at least 8 characters long",
+  "Password can not be P@ssw0rd",
+];
+
+const HighlightText = () => {
+  return (
+    <span className="relative inline-block before:block before:absolute before:-inset-0.5 before:-skew-y-2 before:bg-blue-500">
+      <span className="relative text-white">account</span>
+    </span>
+  );
+};
 
 const AuthForm = ({ type }: AuthFormProps) => {
   const [error, setError] = useState<string>();
@@ -24,8 +43,14 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const router = useRouter();
   if (authenticated) router.push("/");
 
-  const registerUser = async (event: FormEvent) => {
+  const authenticateUser = async (event: FormEvent) => {
     event.preventDefault();
+    if (type === "register") {
+      const verify: any = passwordCheck(password.current.value);
+      if (!verify.status) {
+        return setError(verify.message);
+      }
+    }
 
     try {
       type === "register"
@@ -59,16 +84,45 @@ const AuthForm = ({ type }: AuthFormProps) => {
           <div className="pb-1 space-y-2">
             <h2 className="text-3xl font-bold sm:text-2xl">
               {type === "register" ? (
-                <>Register an account</>
+                <>
+                  Register your <HighlightText />
+                </>
               ) : (
-                <>Login to your account</>
+                <>
+                  Login to your <HighlightText />
+                </>
               )}
             </h2>
-            <p className="leading-5 text-gray-700">
+            <div className="leading-5 text-gray-700">
               {type === "register" ? (
                 <>
-                  It's quick, easy and free. We do not collect any of your
-                  information
+                  <p className="py-0.5">
+                    It's quick, easy and free. We do not collect any of your
+                    information.
+                  </p>
+                  <small className="font-bold">
+                    If your already a user, click{" "}
+                    <Link href="/login">
+                      <span className="duration-200 cursor-pointer hover:underline hover:text-blue-600">
+                        here
+                      </span>
+                    </Link>{" "}
+                    to login.
+                  </small>
+                  <div className="mx-auto">
+                    <details className="pt-2 pb-0.5" open>
+                      <summary className="text-sm font-semibold leading-6 select-none hover:cursor-pointer ">
+                        Password Credentials
+                      </summary>
+                      <div className="text-sm leading-6 pl-7 text-slate-600 ">
+                        {credentials.map((credential) => (
+                          <li className="px-0.5" key={credential}>
+                            {credential}
+                          </li>
+                        ))}
+                      </div>
+                    </details>
+                  </div>
                 </>
               ) : (
                 <>
@@ -80,10 +134,10 @@ const AuthForm = ({ type }: AuthFormProps) => {
                   </Link>
                 </>
               )}
-            </p>
+            </div>
             {error && <p className="text-red-600">{error}</p>}
           </div>
-          <form onSubmit={registerUser} className="flex flex-col gap-2">
+          <form onSubmit={authenticateUser} className="flex flex-col gap-2">
             <Field
               innerRef={username}
               id="username"
