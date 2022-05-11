@@ -21,7 +21,6 @@ const AuthForm = ({ type }: AuthFormProps) => {
 
   const dispatch = useAuthDispatch();
   const { authenticated } = useAuthState();
-  console.log(dispatch);
   const router = useRouter();
   if (authenticated) router.push("/");
 

@@ -5,7 +5,7 @@ import { useAuthDispatch, useAuthState } from "../context/auth";
 
 const Home: NextPage = () => {
   const dispatch = useAuthDispatch();
-  const { authenticated } = useAuthState();
+  const { authenticated, user } = useAuthState();
 
   const handleLogout = () => {
     dispatch("LOGOUT");
@@ -14,7 +14,7 @@ const Home: NextPage = () => {
   return (
     <div className="flex flex-col p-4">
       <h2>Temporary</h2>
-
+      {user ? <p>Hello {user.username}</p> : <p>No User is currently logged in</p>}
       <div className="flex gap-5 text-blue-600">
         {!authenticated && (
           <>
