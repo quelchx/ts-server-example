@@ -8,6 +8,7 @@ const authError = (res: Response) => {
   return res.status(404).json({ error: "Credentails do not match" });
 };
 
+/** @register user */
 export const register = async (req: Request, res: Response) => {
   const { username, email, password } = req.body;
   const salt = bcrypt.genSaltSync();
@@ -27,6 +28,7 @@ export const register = async (req: Request, res: Response) => {
   }
 };
 
+/** @login user */
 export const login = async (req: Request, res: Response) => {
   const { username } = req.body;
   try {
@@ -62,4 +64,25 @@ export const login = async (req: Request, res: Response) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
+};
+
+/** @logout user */
+export const logout = (_: Request, res: Response) => {
+  res.set(
+    "Set-Cookie",
+    cookie.serialize("token", "", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      expires: new Date(0),
+      path: "/",
+    })
+  );
+
+  return res.status(200).json({ success: true });
+};
+
+/** @getCurrentUser */
+export const getCurrentUser = (_: Request, res: Response) => {
+  return res.json(res.locals.user);
 };

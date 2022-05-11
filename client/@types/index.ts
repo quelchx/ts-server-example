@@ -13,3 +13,14 @@ export type FieldProps<Element extends React.ElementType> =
     Omit<React.ComponentProps<Element>, keyof FieldInitialProps<Element>>;
 
 export type ChangeEvent = React.ChangeEvent<HTMLInputElement>;
+
+type DocumentResult<T> = {
+  _doc: T;
+};
+
+export interface UserModel extends DocumentResult<UserModel> {
+  username: string;
+  email: string;
+  password: string;
+  isAdmin?: boolean;
+}

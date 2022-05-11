@@ -1,11 +1,11 @@
 import React, { FormEvent, useRef, useState } from "react";
 import Axios from "axios";
+import Link from "next/link";
 import { useRouter } from "next/router";
 
 import Field from "../components/input-field";
-
+import { useAuthDispatch, useAuthState } from "../context/auth";
 import type { ChangeEvent, FieldReferenceType } from "../@types";
-import Link from "next/link";
 
 interface AuthFormProps {
   type: "login" | "register";
@@ -19,7 +19,11 @@ const AuthForm = ({ type }: AuthFormProps) => {
   const username = useRef() as FieldReferenceType;
   const password = useRef() as FieldReferenceType;
 
+  const dispatch = useAuthDispatch();
+  const { authenticated } = useAuthState();
+  console.log(dispatch);
   const router = useRouter();
+  if (authenticated) router.push("/");
 
   const registerUser = async (event: FormEvent) => {
     event.preventDefault();
@@ -31,15 +35,18 @@ const AuthForm = ({ type }: AuthFormProps) => {
             username: username.current.value,
             password: password.current.value,
           })
-        : await Axios.post("auth/login", {
+        : await Axios.post("/auth/login", {
             username: username.current.value,
             password: password.current.value,
+          }).then((res) => {
+            dispatch("LOGIN", res.data);
           });
 
-      type === "register" ? router.push("/login") : router.push("/");
+      type === "register" ? router.push("/login") : router.back();
     } catch (err: any) {
+      console.log(err);
       const { error } = err.response.data;
-      error.includes("duplicate key")
+      error?.includes("duplicate key")
         ? setError("Duplicate Email or Username")
         : setError("Something went wrong");
     }
